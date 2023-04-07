@@ -1,108 +1,68 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Text, View} from 'react-native';
 import {styles} from '../theme/appTheme';
 import {CalculatorButton} from '../components/CalculatorButton';
-import {ButtonProps} from '../interfaces/Interfaces';
-
-const buttons: ButtonProps[][] = [
-  [
-    {
-      content: 'C',
-      color: 'gainsboro',
-    },
-    {
-      content: '+/-',
-      color: 'gainsboro',
-    },
-    {
-      content: '%',
-      color: 'gainsboro',
-    },
-    {
-      content: '/',
-      color: 'orange',
-    },
-  ],
-  [
-    {
-      content: '7',
-      color: 'dimgray',
-    },
-    {
-      content: '8',
-      color: 'dimgray',
-    },
-    {
-      content: '9',
-      color: 'dimgray',
-    },
-    {
-      content: 'X',
-      color: 'orange',
-    },
-  ],
-  [
-    {
-      content: '4',
-      color: 'dimgray',
-    },
-    {
-      content: '5',
-      color: 'dimgray',
-    },
-    {
-      content: '6',
-      color: 'dimgray',
-    },
-    {
-      content: '-',
-      color: 'orange',
-    },
-  ],
-  [
-    {
-      content: '1',
-      color: 'dimgray',
-    },
-    {
-      content: '2',
-      color: 'dimgray',
-    },
-    {
-      content: '3',
-      color: 'dimgray',
-    },
-    {
-      content: '+',
-      color: 'orange',
-    },
-  ],
-  [
-    {
-      content: '0',
-      color: 'dimgray',
-      large: true,
-    },
-    {
-      content: '.',
-      color: 'dimgray',
-    },
-    {
-      content: '=',
-      color: 'orange',
-    },
-  ],
-];
+import {ActionMap, OperationsMap} from '../interfaces/Interfaces';
+import {BUTTONS_LIST} from '../constants/constants';
 
 export const CalculatorScreen = () => {
+  const [result, setResult] = useState('100');
+
+  const changePositive = () => {
+    const isNegative = result.includes('-');
+    isNegative ? setResult(result.replace('-', '')) : setResult('-' + result);
+  };
+
+  const handleOperation = (content: string) => {
+    OPERATIONS_MAP[content as keyof OperationsMap]();
+  };
+
+  const handlePercentage = () => {
+    setResult(String(Number(result) / 100));
+  };
+
+  const handleReset = () => {
+    setResult('0');
+  };
+
+  const handleNumber = (content: string) => {
+    setResult(oldValue => {
+      if (content === '.' && oldValue.includes('.')) return oldValue;
+      if (oldValue === '0') {
+        if (content === '.') return oldValue + content;
+        return oldValue === '0' ? content : oldValue + content;
+      }
+      return oldValue + content;
+    });
+  };
+
+  const ACTIONS_MAP: ActionMap = {
+    operation: handleOperation,
+    addNumber: handleNumber,
+    reset: handleReset,
+  };
+
+  const OPERATIONS_MAP: OperationsMap = {
+    '+/-': changePositive,
+    '%': handlePercentage,
+  };
   return (
     <View style={styles.calculatorWrapper}>
-      <Text style={styles.result}>10,700.50</Text>
+      <Text adjustsFontSizeToFit numberOfLines={1} style={styles.result}>
+        {result}
+      </Text>
       <View>
-        {buttons.map(row => (
+        {BUTTONS_LIST.map(row => (
           <View style={styles.buttonsRow}>
-            {row.map(({content, color, large}) => (
-              <CalculatorButton content={content} color={color} large={large} />
+            {row.map(({content, color, large, type}) => (
+              <CalculatorButton
+                action={ACTIONS_MAP[type as keyof ActionMap]}
+                content={content}
+                color={color}
+                key={content}
+                large={large}
+                type={type}
+              />
             ))}
           </View>
         ))}
