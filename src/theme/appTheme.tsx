@@ -21,4 +21,10 @@ export const styles = StyleSheet.create({
     fontSize: 60,
     color: 'white',
   },
+  smallNumber: {
+    alignSelf: 'flex-end',
+    fontSize: 30,
+    color: 'white',
+    opacity: .7
+  }
 });

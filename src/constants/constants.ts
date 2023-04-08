@@ -1,6 +1,15 @@
-import {ActionMap, ButtonProps} from '../interfaces/Interfaces';
+import { changePositive, handleDivide, handleMultiply, handleSubstract, handleSum } from '../helpers/helpers';
+import {ButtonsList, OperationsMap} from '../interfaces/Interfaces';
 
-export const BUTTONS_LIST: ButtonProps[][] = [
+export const OPERATIONS_MAP: OperationsMap = {
+  '+/-': changePositive,
+  '+': handleSum,
+  '-': handleSubstract,
+  '/': handleDivide,
+  X: handleMultiply,
+};
+
+export const BUTTONS_LIST: ButtonsList[][] = [
   [
     {
       content: 'C',
@@ -13,14 +22,14 @@ export const BUTTONS_LIST: ButtonProps[][] = [
       type: 'operation',
     },
     {
-      content: '%',
+      content: 'del',
       color: 'gainsboro',
-      type: 'operation',
+      type: 'deleteLast',
     },
     {
       content: '/',
       color: 'orange',
-      type: 'operation',
+      type: 'aritmetic',
     },
   ],
   [
@@ -42,7 +51,7 @@ export const BUTTONS_LIST: ButtonProps[][] = [
     {
       content: 'X',
       color: 'orange',
-      type: 'operation',
+      type: 'aritmetic',
     },
   ],
   [
@@ -64,7 +73,7 @@ export const BUTTONS_LIST: ButtonProps[][] = [
     {
       content: '-',
       color: 'orange',
-      type: 'operation',
+      type: 'aritmetic',
     },
   ],
   [
@@ -86,7 +95,7 @@ export const BUTTONS_LIST: ButtonProps[][] = [
     {
       content: '+',
       color: 'orange',
-      type: 'operation',
+      type: 'aritmetic',
     },
   ],
   [
@@ -104,7 +113,7 @@ export const BUTTONS_LIST: ButtonProps[][] = [
     {
       content: '=',
       color: 'orange',
-      type: 'operation',
+      type: 'calculate',
     },
   ],
 ];

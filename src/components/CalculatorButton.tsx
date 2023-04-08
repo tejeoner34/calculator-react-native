@@ -2,9 +2,9 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {ButtonProps} from '../interfaces/Interfaces';
 
-export const CalculatorButton = ({content, color, large, action}: ButtonProps) => {
+export const CalculatorButton = ({content, color, large, action, type}: ButtonProps) => {
   return (
-    <TouchableOpacity onPress={() =>action && action(content)} style={[large && styles.largeButton]}>
+    <TouchableOpacity onPress={() =>action(content, type)} style={[large && styles.largeButton]}>
       <View
         style={[
           styles.buttonWrapper,

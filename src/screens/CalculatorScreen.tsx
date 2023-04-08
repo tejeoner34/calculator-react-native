@@ -1,28 +1,34 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Text, View} from 'react-native';
 import {styles} from '../theme/appTheme';
 import {CalculatorButton} from '../components/CalculatorButton';
 import {ActionMap, OperationsMap} from '../interfaces/Interfaces';
-import {BUTTONS_LIST} from '../constants/constants';
+import {BUTTONS_LIST, OPERATIONS_MAP} from '../constants/constants';
 
 export const CalculatorScreen = () => {
   const [result, setResult] = useState('100');
+  const [lastValue, setlastValue] = useState('');
 
-  const changePositive = () => {
-    const isNegative = result.includes('-');
-    isNegative ? setResult(result.replace('-', '')) : setResult('-' + result);
-  };
+  const lastOperation = useRef<string>();
 
   const handleOperation = (content: string) => {
-    OPERATIONS_MAP[content as keyof OperationsMap]();
-  };
-
-  const handlePercentage = () => {
-    setResult(String(Number(result) / 100));
+    setResult(OPERATIONS_MAP[content as keyof OperationsMap](result, lastValue));
   };
 
   const handleReset = () => {
     setResult('0');
+    setlastValue('0');
+  };
+
+  const handleDelete = () => {
+    if (
+      result.length === 1 ||
+      (result.length === 2 && result.startsWith('-'))
+    ) {
+      setResult('0');
+    } else {
+      setResult(result.slice(0, -1));
+    }
   };
 
   const handleNumber = (content: string) => {
@@ -36,18 +42,48 @@ export const CalculatorScreen = () => {
     });
   };
 
+  const handleAritmenticOperator = (operation: string) => {
+    if (lastOperation.current) {
+      setlastValue(
+        OPERATIONS_MAP[lastOperation.current as keyof OperationsMap](
+          result,
+          lastValue,
+        ),
+      );
+    } else {
+      setlastValue(result);
+    }
+    setResult('0');
+    lastOperation.current = operation;
+  };
+
+  const calculateResult = () => {
+    setResult(
+      OPERATIONS_MAP[lastOperation.current as keyof OperationsMap](
+        result,
+        lastValue,
+      ),
+    );
+    setlastValue('0');
+    lastOperation.current = undefined;
+  };
+
   const ACTIONS_MAP: ActionMap = {
-    operation: handleOperation,
     addNumber: handleNumber,
+    aritmetic: handleAritmenticOperator,
+    calculate: calculateResult,
+    deleteLast: handleDelete,
+    operation: handleOperation,
     reset: handleReset,
   };
 
-  const OPERATIONS_MAP: OperationsMap = {
-    '+/-': changePositive,
-    '%': handlePercentage,
-  };
   return (
     <View style={styles.calculatorWrapper}>
+      {Number(lastValue) !== 0 && (
+        <Text adjustsFontSizeToFit numberOfLines={1} style={styles.smallNumber}>
+          {lastValue}
+        </Text>
+      )}
       <Text adjustsFontSizeToFit numberOfLines={1} style={styles.result}>
         {result}
       </Text>
